@@ -2,12 +2,15 @@ package m2.iscae.mr.maploaction;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -20,7 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-public class MapActivity extends AppCompatActivity implements LocationListener {
+public class MapActivity extends AppCompatActivity implements LocationListener, View.OnClickListener {
 
     private static final int permission_CALL_ID = 1234;
     FragmentManager fragmentManager = getFragmentManager();
@@ -29,11 +32,18 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
     //chnagement localisation
     private MapFragment mapFragment;
 
+    private Location maPosition;
+
+    private Button shareBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         mapFragment  =(MapFragment)fragmentManager.findFragmentById(R.id.map2);
+
+        shareBtn = (Button) findViewById(R.id.share);
+        shareBtn.setOnClickListener(this);
 
     }
 
@@ -89,8 +99,7 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
                 //on autorise l'api à afficher le bouton pour accéder à notre position courante
                 googleMap.setMyLocationEnabled(true);
                 //définition du marqueur qui va se positionner sur le point qu'on désire afficher
-                googleMap.addMarker(new MarkerOptions().position(new LatLng(18.070147535, -15.95280180685))
-                        .title("voici votre  position"));
+               //googleMap.addMarker(new MarkerOptions().position(new LatLng(18.070147535, -15.95280180685)).title("voici votre  position"));
 
             }
         });
@@ -122,13 +131,11 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
+        maPosition = location;
 
         ///Toast.makeText(this, "Info_localisation" + latitude + "/" + longitude, Toast.LENGTH_LONG).show();
         if (googleMap != null) {
-            LatLng geolocation = new LatLng(latitude, longitude);
+            LatLng geolocation = new LatLng(maPosition.getLatitude(), maPosition.getLongitude());
             googleMap.addMarker(new MarkerOptions().position(geolocation)
                     .title("voici votre  position"));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(geolocation));
@@ -138,6 +145,23 @@ public class MapActivity extends AppCompatActivity implements LocationListener {
 
     }
 
+    @Override
+    public void onClick(View view) {
+
+        if (view == shareBtn) {
+            if (maPosition != null) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, "https://maps.google.com/?ll="+ maPosition.getLatitude() +","+ maPosition.getLatitude());
+                startActivity(Intent.createChooser(intent, "Partager"));
+            } else {
+                Toast.makeText(this, "!! Postion n'est pas disponible ", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+    }
 }
 
 

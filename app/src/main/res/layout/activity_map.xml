@@ -7,12 +7,11 @@
     tools:context=".MapActivity">
 
 
-
     <fragment
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/map2"
         android:name="com.google.android.gms.maps.MapFragment"
-        android:id="@+id/map2">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     </fragment>
 
@@ -22,6 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:background="@drawable/ic_share_black_24dp"
-        android:layout_margin="14dp" />
+        android:layout_margin="5dp" />
 
 </RelativeLayout>
